@@ -56,6 +56,7 @@ public class Account implements Serializable {
     @XmlID
     protected String id;
 
+    protected long dbId;
     /**
      * Gets the value of the annotation property.
      * 

@@ -10,6 +10,7 @@ package nl.biggrid.plier.opm;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -58,6 +59,9 @@ public class Process implements HasAccounts, Annotable, Serializable {
     @XmlID
     protected String id;
 
+    protected long dbId;
+    protected Date startTime;
+    protected Date endTime;
     /**
      * Gets the value of the account property.
      * 
@@ -143,6 +147,54 @@ public class Process implements HasAccounts, Annotable, Serializable {
      */
     public void setId(String value) {
         this.id = value;
+    }
+
+    /**
+     * Gets the value of the startTime property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Date }
+     *
+     */
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * Sets the value of the startTime property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link Date }
+     *
+     */
+    public void setStartTime(Date value) {
+        this.startTime = value;
+    }
+
+    /**
+     * Gets the value of the endTime property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Date }
+     *
+     */
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    /**
+     * Sets the value of the endTime property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link Date }
+     *
+     */
+    public void setTime(Date value) {
+        this.endTime = value;
     }
 
 }

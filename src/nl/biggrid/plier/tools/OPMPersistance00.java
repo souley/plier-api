@@ -4,35 +4,15 @@
  */
 package nl.biggrid.plier.tools;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import java.util.List;
-import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.Transaction;
 
-import nl.biggrid.plier.opmv11.Account;
-import nl.biggrid.plier.opmv11.AccountRef;
-import nl.biggrid.plier.opmv11.Accounts;
-import nl.biggrid.plier.opmv11.Agent;
-import nl.biggrid.plier.opmv11.AgentRef;
-import nl.biggrid.plier.opmv11.Agents;
-import nl.biggrid.plier.opmv11.Artifact;
-import nl.biggrid.plier.opmv11.ArtifactRef;
-import nl.biggrid.plier.opmv11.Artifacts;
-import nl.biggrid.plier.opmv11.CausalDependencies;
-import nl.biggrid.plier.opmv11.OPMGraph;
-import nl.biggrid.plier.opmv11.Process;
-import nl.biggrid.plier.opmv11.ProcessRef;
-import nl.biggrid.plier.opmv11.Processes;
-import nl.biggrid.plier.opmv11.Role;
-import nl.biggrid.plier.opmv11.Used;
-import nl.biggrid.plier.opmv11.WasControlledBy;
-import nl.biggrid.plier.opmv11.WasGeneratedBy;
+import nl.biggrid.plier.opm.*;
 /**
  *
  * @author vguevara
@@ -40,175 +20,149 @@ import nl.biggrid.plier.opmv11.WasGeneratedBy;
 public class OPMPersistance00 {
 
     public static OPMGraph createOPM() {
-        Account mainAccount = new Account();
-        mainAccount.setId("main");
-        Accounts accounts = new Accounts();
-        accounts.getAccount().add(mainAccount);
+        OPMFactory oFactory = new OPMFactory();
+        Account mainAccount = oFactory.newAccount("main");
+        Collection<Account> accountList = Collections.singleton(mainAccount);
 
-        AccountRef accountRef = new AccountRef();
-        accountRef.setRef("main");
+        Agent agent1 = oFactory.newAgent("John", accountList, "John Doe");
+        Agent agent2 = oFactory.newAgent("bakery", accountList, "Fresh Bakery Amsterdam");
 
-        Agent agent1 = new Agent();
-        agent1.setId("John");
-        agent1.getAccount().add(accountRef);
-        Agent agent2 = new Agent();
-        agent2.setId("bakery");
-        agent2.getAccount().add(accountRef);
+        nl.biggrid.plier.opm.Process process = oFactory.newProcess("baking cake with ingredients",
+                accountList,
+                "bake");
 
-        Agents agents = new Agents();
-        agents.getAgent().add(agent1);
-        agents.getAgent().add(agent2);
+        Artifact a1 = oFactory.newArtifact("butter",
+                accountList,
+                "100 g butter");
+        Artifact a2 = oFactory.newArtifact("eggs",
+                accountList,
+                "two eggs");
 
-        Process process = new Process();
-        process.setId("baking cake with ingredients");
-        process.getAccount().add(accountRef);
-        Processes processes = new Processes();
-        processes.getProcess().add(process);
+        Artifact a3 = oFactory.newArtifact("flour",
+                accountList,
+                "100 g flour");
+        Artifact a4 = oFactory.newArtifact("sugar",
+                accountList,
+                "100 g sugar");
+        Artifact a5 = oFactory.newArtifact("cake",
+                accountList,
+                "cake");
 
-        Artifact a1 = new Artifact();
-        a1.setId("butter");
-        a1.getAccount().add(accountRef);
-        Artifact a2 = new Artifact();
-        a2.setId("eggs");
-        a2.getAccount().add(accountRef);
-        Artifact a3 = new Artifact();
-        a3.setId("flour");
-        a3.getAccount().add(accountRef);
-        Artifact a4 = new Artifact();
-        a4.setId("sugar");
-        a4.getAccount().add(accountRef);
-        Artifact a5 = new Artifact();
-        a5.setId("cake");
-        a5.getAccount().add(accountRef);
+//        Agent agent1 = oFactory.newAgent("John", accountList);
+//        Agent agent2 = oFactory.newAgent("bakery", accountList);
+//
+//        nl.biggrid.plier.opm.Process process = oFactory.newProcess("baking cake with ingredients", accountList);
+//
+//        Artifact a1 = oFactory.newArtifact("butter", accountList);
+//        Artifact a2 = oFactory.newArtifact("eggs", accountList);
+//        Artifact a3 = oFactory.newArtifact("flour",accountList);
+//        Artifact a4 = oFactory.newArtifact("sugar",accountList);
+//        Artifact a5 = oFactory.newArtifact("cake", accountList);
 
-        Artifacts artifacts = new Artifacts();
-        artifacts.getArtifact().add(a1);
-        artifacts.getArtifact().add(a2);
-        artifacts.getArtifact().add(a3);
-        artifacts.getArtifact().add(a4);
-        artifacts.getArtifact().add(a5);
+        Used u1 = oFactory.newUsed("used1", process, "(butter)", a1, accountList);
+        Used u2 = oFactory.newUsed("used2", process, "(egg)", a2, accountList);
+        Used u3 = oFactory.newUsed("used3", process, "(flour)", a3, accountList);
+        Used u4 = oFactory.newUsed("used4", process, "(sugar)", a4, accountList);
 
-        AgentRef agent1Ref = new AgentRef();
-        agent1Ref.setRef(agent1.getId());
-        AgentRef agent2Ref = new AgentRef();
-        agent2Ref.setRef(agent2.getId());
+        WasGeneratedBy wgb1 = oFactory.newWasGeneratedBy("wgb1", a5, "cake", process, accountList);
 
-        ProcessRef processRef = new ProcessRef();
-        processRef.setRef(process.getId());
+        WasControlledBy wcb1 = oFactory.newWasControlledBy("wcb1", process, "baker", agent1, accountList);
+        WasControlledBy wcb2 = oFactory.newWasControlledBy("wcb2", process, "bakery", agent2, accountList);
 
-        ArtifactRef a1Ref = new ArtifactRef();
-        a1Ref.setRef(a1.getId());
-        ArtifactRef a2Ref = new ArtifactRef();
-        a2Ref.setRef(a2.getId());
-        ArtifactRef a3Ref = new ArtifactRef();
-        a3Ref.setRef(a3.getId());
-        ArtifactRef a4Ref = new ArtifactRef();
-        a4Ref.setRef(a4.getId());
-        ArtifactRef a5Ref = new ArtifactRef();
-        a5Ref.setRef(a5.getId());
-        
-        Used u1 = new Used();
-        u1.setId("used1");
-        u1.setEffect(processRef);
-        Role butterRole = new Role();
-        butterRole.setId("(butter)");
-        butterRole.setValue("(butter)");
-        u1.setRole(butterRole);
-        u1.setCause(a1Ref);
-        u1.getAccount().add(accountRef);
+        OPMGraph graph = oFactory.newOPMGraph("Victoria Sponge Cake Provenance",
+                accountList,
+                new Overlaps[]{},
+                new nl.biggrid.plier.opm.Process[]{process},
+                new Artifact[]{a1, a2, a3, a4, a5},
+                new Agent[]{agent1, agent2},
+                new CausalDependency[]{u1, u2, u3, u4,
+                    wgb1,
+                    wcb1, wcb2},
+                new Annotation[]{});
 
-        Used u2 = new Used();
-        u2.setId("used2");
-        u2.setEffect(processRef);
-        Role eggRole = new Role();
-        eggRole.setId("(egg)");
-        eggRole.setValue("(egg)");
-        u2.setRole(eggRole);
-        u2.setCause(a2Ref);
-        u2.getAccount().add(accountRef);
-
-        Used u3 = new Used();
-        u3.setId("used3");
-        u3.setEffect(processRef);
-        Role flourRole = new Role();
-        flourRole.setId("(flour)");
-        flourRole.setValue("(flour)");
-        u3.setRole(flourRole);
-        u3.setCause(a3Ref);
-        u3.getAccount().add(accountRef);
-
-        Used u4 = new Used();
-        u4.setId("used4");
-        u4.setEffect(processRef);
-        Role sugarRole = new Role();
-        sugarRole.setId("(sugar)");
-        sugarRole.setValue("(sugar)");
-        u4.setRole(sugarRole);
-        u4.setCause(a4Ref);
-        u4.getAccount().add(accountRef);
-
-        WasGeneratedBy wgb = new WasGeneratedBy();
-        wgb.setId("wgb1");
-        wgb.setEffect(a5Ref);
-        Role cakeRole = new Role();
-        cakeRole.setId("(cake)");
-        cakeRole.setValue("(cake)");
-        wgb.setRole(cakeRole);
-        wgb.setCause(processRef);
-        wgb.getAccount().add(accountRef);
-
-        WasControlledBy wcb1 = new WasControlledBy();
-        wcb1.setId("wcb1");
-        wcb1.setEffect(processRef);
-        Role bakerRole = new Role();
-        bakerRole.setId("(baker)");
-        bakerRole.setValue("(baker)");
-        wcb1.setRole(bakerRole);
-        wcb1.setCause(agent1Ref);
-        wcb1.getAccount().add(accountRef);
-
-        WasControlledBy wcb2 = new WasControlledBy();
-        wcb2.setId("wcb2");
-        wcb2.setEffect(processRef);
-        Role bakeryRole = new Role();
-        bakeryRole.setId("(bakery)");
-        bakeryRole.setValue("(bakery)");
-        wcb2.setRole(bakeryRole);
-        wcb2.setCause(agent2Ref);
-        wcb2.getAccount().add(accountRef);
-
-        CausalDependencies dependencies = new CausalDependencies();
-        dependencies.getDependency().add(u1);
-        dependencies.getDependency().add(u2);
-        dependencies.getDependency().add(u3);
-        dependencies.getDependency().add(u4);
-        dependencies.getDependency().add(wgb);
-        dependencies.getDependency().add(wcb1);
-        dependencies.getDependency().add(wcb2);
-
-        OPMGraph graph = new OPMGraph();
-        graph.setId("Victoria_Sponge_Cake_Provenance");
-        graph.setAccounts(accounts);
-        graph.setAgents(agents);
-        graph.setArtifacts(artifacts);
-        graph.setProcesses(processes);
-        graph.setCausalDependencies(dependencies);
         return graph;
     }
 
-
-    public static void main(String args[])
-    {
-        SessionFactory sessionFactory = new Configuration()
-            .configure() // configures settings from hibernate.cfg.xml
-            .buildSessionFactory();
-
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
-        OPMGraph graph = createOPM();
-        session.save( graph );
-        session.getTransaction().commit();
-        session.close();
+    static Agent createAgent() {
+        OPMFactory oFactory = new OPMFactory();
+        Account mainAccount = oFactory.newAccount("main");
+        Collection<Account> accountList = Collections.singleton(mainAccount);
+        return oFactory.newAgent("John", accountList, "John Doe");
+    }
+    static void persist(SessionFactory factory, OPMGraph graph) {
+        System.out.println("### MAIN::PERSIST ...");
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.save( graph );
+            tx.commit();
+            System.out.println("### GRAPH "+graph.getId()+" -> SAVED ...");
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            session.close();
+        }
     }
 
+    static void persist(SessionFactory factory, Agent agt) {
+        System.out.println("### MAIN::PERSIST ...");
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.save( agt );
+            tx.commit();
+            System.out.println("### AGENT "+agt.getId()+" -> SAVED ...");
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            session.close();
+        }
+    }
+
+    static OPMGraph load(SessionFactory factory) {
+        OPMGraph graph = null;
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+//            final String QUERY = "from OPMGraph where id=?";
+//            Query hqlQuery = session.createQuery(QUERY);
+//            hqlQuery.setString(0, "Victoria Sponge Cake Provenance");
+//            //graph = (OPMGraph)hqlQuery.uniqueResult();
+//            List<OPMGraph> results = hqlQuery.list();
+//            graph = results.get(0);
+            //graph = (OPMGraph)session.get(OPMGraph.class, "Victoria Sponge Cake Provenance");
+            graph = (OPMGraph)session.get(OPMGraph.class, new Long(2));
+            System.out.println("### GRAPH "+graph.getId()+" -> EXTRACTED ...");
+            System.out.println("### ACCOUNTS -> "+graph.getAccounts().getAccount().size());
+            System.out.println("### OVERLAPS -> "+graph.getAccounts().getOverlaps().size());
+            System.out.println("### AGENTS -> "+graph.getAgents().getAgent().size());
+            System.out.println("### ARTIFACTS -> "+graph.getArtifacts().getArtifact().size());
+            System.out.println("### PROCESSES -> "+graph.getProcesses().getProcess().size());
+            System.out.println("### DEPENDENCIES -> "+graph.getCausalDependencies().getDependency().size());
+            System.out.println("### ANNOTATIONS -> "+graph.getAnnotation().size());
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            session.close();
+        }
+        return graph;
+    }
+
+    public static void main(String args[]) {
+        SessionFactory factory = new Configuration().configure() // configures settings from hibernate.cfg.xml
+                .buildSessionFactory();
+        persist(factory, createOPM());
+        //persist(factory, createAgent());
+        //load(factory);
+    }
 }

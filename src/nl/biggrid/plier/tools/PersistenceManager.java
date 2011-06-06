@@ -4,10 +4,13 @@
  */
 package nl.biggrid.plier.tools;
 
+import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import nl.biggrid.plier.opmv11.OPMGraph;
+import nl.biggrid.plier.opm.OPMGraph;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -30,7 +33,7 @@ public class PersistenceManager {
     }
 
     public void init(String propFile) {
-        sessionFactory = new Configuration().configure(propFile).buildSessionFactory();
+        sessionFactory = new Configuration().configure(new File(propFile)).buildSessionFactory();
     }
 
     public void shutdown() {
@@ -44,33 +47,87 @@ public class PersistenceManager {
             session.save(o);
             tx.commit();
         } catch (HibernateException he) {
-            if (tx!=null) tx.rollback();
+            if (tx != null) {
+                tx.rollback();
+            }
             he.printStackTrace();
-        }
-        finally {
+        } finally {
             session.close();
         }
     }
 
-    public OPMGraph readOPMGraph(final String gid) {
-        return null;
-    }
-
-    public Object readObject(final Class type, final String objId) {
-        if (type.equals(OPMGraph.class)) {
-            return readOPMGraph(objId);
+    public Object get(final Class type, final Serializable oId) {
+        Object res = null;
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            res = session.get(type, oId);
+            tx.commit();
+        } catch (HibernateException he) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            he.printStackTrace();
+        } finally {
+            session.close();
         }
-        return null;
+        return res;
     }
 
-    public List<OPMGraph> readAll() {
-        //Query query = pm.newQuery("javax.jdo.query.SQL", "SELECT GRAPH_ID FROM OPM_GRAPH");
+    public void delete(final Object o) {
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.delete(o);
+            tx.commit();
+        } catch (HibernateException he) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            he.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+
+    public void update(final Object o) {
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.update(o);
+            tx.commit();
+        } catch (HibernateException he) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            he.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+
+    public List<OPMGraph> getAll() {
         List<OPMGraph> experiments = new ArrayList<OPMGraph>();
-        List<Object> results = null;//(List<Object>) query.execute();
-        for (Object o : results) {
-            OPMGraph opm = new OPMGraph();
-            opm.setId((String) o);
-            experiments.add(opm);
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            Query query = session.createQuery("from OPMGraph");
+            List<Object> results = query.list();
+            for (Object o : results) {
+                experiments.add((OPMGraph)o);
+            }
+            tx.commit();
+        } catch (HibernateException he) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            he.printStackTrace();
+        } finally {
+            session.close();
         }
         return experiments;
     }

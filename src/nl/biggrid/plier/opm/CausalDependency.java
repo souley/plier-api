@@ -10,6 +10,7 @@ package nl.biggrid.plier.opm;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -57,7 +58,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class CausalDependency implements HasAccounts, Annotable, Serializable {
 
     protected List<Account> account;
-    protected OTime time;
+    protected Date time;
     @XmlElementRef(name = "annotation", namespace = "http://openprovenance.org/model/v1.1.a", type = JAXBElement.class)
     protected List<EmbeddedAnnotation> annotation;
     @XmlAttribute
@@ -65,7 +66,7 @@ public class CausalDependency implements HasAccounts, Annotable, Serializable {
     @XmlID
     protected String id;
 
-
+    protected long dbId;
     /**
      * Gets the value of the account property.
      * 
@@ -103,7 +104,7 @@ public class CausalDependency implements HasAccounts, Annotable, Serializable {
      *     {@link OTime }
      *     
      */
-    public OTime getTime() {
+    public Date getTime() {
         return time;
     }
 
@@ -115,7 +116,7 @@ public class CausalDependency implements HasAccounts, Annotable, Serializable {
      *     {@link OTime }
      *     
      */
-    public void setTime(OTime value) {
+    public void setTime(Date value) {
         this.time = value;
     }
 

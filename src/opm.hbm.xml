@@ -8,213 +8,175 @@
   ~    Purpose of the document follows.
 -->
 <hibernate-mapping default-access="field" default-cascade="all" package="nl.biggrid.plier.opm">
-    <class name="Property" table="OPMProperty">
-        <id column="PropertyId" type="long">
-            <generator class="native"/>
-        </id>
-        <property column="PropertyKey" name="uri"/>
-        <property column="PropertyValue" name="value"/>
-    </class>
+  <class name="Property" table="OPMProperty">
+    <id name="dbId" column="PropertyId" type="long">
+      <generator class="native"/>
+    </id>
+    <property column="PropertyKey" name="uri"/>
+    <property column="PropertyValue" name="value"/>
+  </class>
 
-    <class name="EmbeddedAnnotation" table="OPMAnnotation">
-        <id column="AnnotationKey" type="long">
-            <generator class="native"/>
-        </id>
-        <discriminator column="AnnotationType" type="string"/>
-        <property column="AnnotationId" name="id" type="string"/>
-        <bag name="propertyList" table="AnnotationProperty">
-            <key column="AnnotationKey"/>
-            <many-to-many class="Property" column="PropertyId"/>
-        </bag>
-        <bag name="account" table="AnnotationAccount">
-            <key column="AnnotationKey"/>
-            <many-to-many class="Account" column="AccountKey"/>
-        </bag>
-        <subclass name="Annotation">
-            <property column="ExternalSubject" name="externalSubject" type="string"/>
-            <property column="LocalSubject" name="localSubject" type="string"/>
-        </subclass>
-        <subclass name="Label">
-            <property column="LabelValue" name="value" type="string"/>
-        </subclass>
-    </class>
+  <class name="EmbeddedAnnotation" table="OPMAnnotation">
+    <id name="dbId" column="AnnotationKey" type="long">
+      <generator class="native"/>
+    </id>
+    <discriminator column="AnnotationType" type="string"/>
+    <property column="AnnotationId" name="id" type="string"/>
+    <bag name="propertyList" table="AnnotationProperty">
+      <key column="AnnotationKey"/>
+      <many-to-many class="Property" column="PropertyId"/>
+    </bag>
+    <bag name="account" table="AnnotationAccount">
+      <key column="AnnotationKey"/>
+      <many-to-many class="Account" column="AccountKey"/>
+    </bag>
+    <subclass name="Annotation">
+      <property column="ExternalSubject" name="externalSubject" type="string"/>
+      <property column="LocalSubject" name="localSubject" type="string"/>
+    </subclass>
+    <subclass name="Label">
+      <property column="LabelValue" name="value" type="string"/>
+    </subclass>
+  </class>
+
+  <class name="Account" table="OPMAccount">
+    <id name="dbId" column="AccountKey" type="long">
+      <generator class="native"/>
+    </id>
+    <property column="AccountId" name="id" type="string"/>
+    <bag name="annotation" table="AccountAnnotation">
+      <key column="AccountKey"/>
+      <many-to-many class="Annotation" column="AnnotationKey" unique="true"/>
+    </bag>
+  </class>
+
+  <class name="Agent" table="OPMAgent">
+    <id name="dbId" column="AgentKey" type="long">
+      <generator class="native"/>
+    </id>
+    <property column="AgentId" name="id" type="string"/>
+    <bag name="account" table="AgentAccount">
+      <key column="AgentKey"/>
+      <many-to-many class="Account" column="AccountKey"/>
+    </bag>
+    <bag name="annotation" table="AgentAnnotation">
+      <key column="AgentKey"/>
+      <many-to-many class="EmbeddedAnnotation" column="AnnotationKey"/>
+    </bag>
+  </class>
+
+  <class name="Artifact" table="OPMArtifact">
+    <id name="dbId" column="ArtifactKey" type="long">
+      <generator class="native"/>
+    </id>
+    <property column="ArtifactId" name="id" type="string"/>
+    <bag name="account" table="ArtifactAccount">
+      <key column="ArtifactKey"/>
+      <many-to-many class="Account" column="AccountKey"/>
+    </bag>
+    <bag name="annotation" table="ArtifactAnnotation">
+      <key column="ArtifactKey"/>
+      <many-to-many class="EmbeddedAnnotation" column="AnnotationKey"/>
+    </bag>
+  </class>
+
+  <class name="Process" table="OPMProcess">
+    <id name="dbId" column="ProcessKey" type="long">
+      <generator class="native"/>
+    </id>
+    <property column="ProcessId" name="id" type="string"/>
+    <property column="StartTime" name="startTime" type="timestamp"/>
+    <property column="EndTime" name="endTime" type="timestamp"/>
+    <bag name="account" table="ProcessAccount">
+      <key column="ProcessKey"/>
+      <many-to-many class="Account" column="AccountKey"/>
+    </bag>
+    <bag name="annotation" table="ProcessAnnotation">
+      <key column="ProcessKey"/>
+      <many-to-many class="EmbeddedAnnotation" column="AnnotationKey"/>
+    </bag>
+  </class>
+
+  <class name="CausalDependency" table="OPMDependency">
+    <id name="dbId" column="DependencyKey" type="long">
+      <generator class="native"/>
+    </id>
+    <discriminator column="DependencyType" type="string"/>
+    <property column="DependencyId" name="id" type="string"/>
+    <property column="Time" name="time" type="timestamp"/>
+    <bag name="account" table="DependencyAccount">
+      <key column="DependencyKey"/>
+      <many-to-many class="Account" column="AccountKey"/>
+    </bag>
+    <bag name="annotation" table="DependencyAnnotation">
+      <key column="DependencyKey"/>
+      <many-to-many class="Annotation" column="AnnotationKey"/>
+    </bag>
+    <subclass name="Used">
+      <property column="DependencyRole" name="role" type="string"/>
+      <many-to-one column="DependencyCause" foreign-key="" name="cause"/>
+      <many-to-one column="DependencyEffect" foreign-key="" name="effect"/>
+    </subclass>
+    <subclass name="WasGeneratedBy">
+      <property column="DependencyRole" name="role" type="string"/>
+      <many-to-one column="DependencyCause" foreign-key="" name="cause"/>
+      <many-to-one column="DependencyEffect" foreign-key="" name="effect"/>
+    </subclass>
+    <subclass name="WasControlledBy">
+      <property column="DependencyRole" name="role" type="string"/>
+      <many-to-one column="DependencyCause" foreign-key="" name="cause"/>
+      <many-to-one column="DependencyEffect" foreign-key="" name="effect"/>
+    </subclass>
+    <subclass name="WasDerivedFrom">
+      <many-to-one column="DependencyCause" foreign-key="" name="cause"/>
+      <many-to-one column="DependencyEffect" foreign-key="" name="effect"/>
+    </subclass>
+    <subclass name="WasTriggeredBy">
+      <many-to-one column="DependencyCause" foreign-key="" name="cause"/>
+      <many-to-one column="DependencyEffect" foreign-key="" name="effect"/>
+    </subclass>
+  </class>
   
-    <class name="Account" table="OPMAccount">
-        <id column="AccountKey" type="long">
-            <generator class="native"/>
-        </id>
-        <property column="AccountId" name="id" type="string"/>
-        <bag name="annotation" table="AccountAnnotation">
-            <key column="AccountKey"/>
-            <many-to-many class="Annotation" column="AnnotationKey" unique="true"/>
-        </bag>
-    </class>
-  
-    <class name="Agent" table="OPMAgent">
-        <id column="AgentKey" type="long">
-            <generator class="native"/>
-        </id>
-        <property column="AgentId" name="id" type="string"/>
-        <bag name="account" table="AgentAccount">
-            <key column="AgentKey"/>
-            <many-to-many class="Account" column="AccountKey"/>
-        </bag>
-        <bag name="annotation" table="AgentAnnotation">
-            <key column="AgentKey"/>
-            <many-to-many class="EmbeddedAnnotation" column="AnnotationKey"/>
-        </bag>
-    </class>
-
-    <class name="Artifact" table="OPMArtifact">
-        <id column="ArtifactKey" type="long">
-            <generator class="native"/>
-        </id>
-        <property column="ArtifactId" name="id" type="string"/>
-        <bag name="account" table="ArtifactAccount">
-            <key column="ArtifactKey"/>
-            <many-to-many class="Account" column="AccountKey"/>
-        </bag>
-        <bag name="annotation" table="ArtifactAnnotation">
-            <key column="ArtifactKey"/>
-            <many-to-many class="EmbeddedAnnotation" column="AnnotationKey"/>
-        </bag>
-    </class>
-    
-    <class name="Process" table="OPMProcess">
-        <id column="ProcessKey" type="long">
-            <generator class="native"/>
-        </id>
-        <property column="ProcessId" name="id" type="string"/>
-        <bag name="account" table="ProcessAccount">
-            <key column="ProcessKey"/>
-            <many-to-many class="Account" column="AccountKey"/>
-        </bag>
-        <bag name="annotation" table="ProcessAnnotation">
-            <key column="ProcessKey"/>
-            <many-to-many class="EmbeddedAnnotation" column="AnnotationKey"/>
-        </bag>
-    </class>
-
-<!--
-    <class name="CausalDependency" table="OPMDependency">
-        <id column="DependencyKey" type="long">
-            <generator class="native"/>
-        </id>
-        <discriminator column="DependencyType" type="string"/>
-        <property column="DependencyId" name="id" type="string"/>
-        <bag name="account" table="DependencyAccount">
-            <key column="DependencyKey"/>
-            <many-to-many class="Account" column="AccountKey"/>
-        </bag>
-        <bag name="annotation" table="DependencyAnnotation">
-            <key column="DependencyKey"/>
-            <many-to-many class="Annotation" column="AnnotationKey"/>
-        </bag>
-        <subclass name="Used">
-            <property name="role" type="string" column="DependencyRole"/>
-            <many-to-one name="cause" column="ArtifactKey"/>
-            <many-to-one name="effect" column="ProcessKey"/>
-        </subclass>
-        <subclass name="WasGeneratedBy">
-            <property name="role" type="string" column="DependencyRole"/>
-            <many-to-one name="cause" column="ProcessKey"/>
-            <many-to-one name="effect" column="ArtifactKey"/>
-        </subclass>
-        <subclass name="WasControlledBy">
-            <property name="role" type="string" column="DependencyRole"/>
-            <many-to-one name="cause" column="AgentKey"/>
-            <many-to-one name="effect" column="ProcessKey"/>
-        </subclass>
-        <subclass name="WasDerivedFrom">
-            <many-to-one name="cause" class="Artifact"/>
-            <many-to-one name="effect" class="Artifact"/>
-        </subclass>
-        <subclass name="WasTriggeredBy">
-            <many-to-one name="cause" class="Process"/>
-            <many-to-one name="effect" class="Process"/>
-        </subclass>
-    </class>
-    -->
-
-    <class name="CausalDependency" table="OPMDependency">
-        <id column="DependencyKey" type="long">
-            <generator class="native"/>
-        </id>
-        <discriminator column="DependencyType" type="string"/>
-        <property column="DependencyId" name="id" type="string"/>
-        <bag name="account" table="DependencyAccount">
-            <key column="DependencyKey"/>
-            <many-to-many class="Account" column="AccountKey"/>
-        </bag>
-        <bag name="annotation" table="DependencyAnnotation">
-            <key column="DependencyKey"/>
-            <many-to-many class="Annotation" column="AnnotationKey"/>
-        </bag>
-        <subclass name="Used">
-            <property name="role" type="string" column="DependencyRole"/>
-            <many-to-one name="cause" column="DependencyCause" foreign-key=""/>
-            <many-to-one name="effect" column="DependencyEffect" foreign-key=""/>
-        </subclass>
-        <subclass name="WasGeneratedBy">
-            <property name="role" type="string" column="DependencyRole"/>
-            <many-to-one name="cause" column="DependencyCause" foreign-key=""/>
-            <many-to-one name="effect" column="DependencyEffect" foreign-key=""/>
-        </subclass>
-        <subclass name="WasControlledBy">
-            <property name="role" type="string" column="DependencyRole"/>
-            <many-to-one name="cause" column="DependencyCause" foreign-key=""/>
-            <many-to-one name="effect" column="DependencyEffect" foreign-key=""/>
-        </subclass>
-        <subclass name="WasDerivedFrom">
-            <many-to-one name="cause" column="DependencyCause" foreign-key=""/>
-            <many-to-one name="effect" column="DependencyEffect" foreign-key=""/>
-        </subclass>
-        <subclass name="WasTriggeredBy">
-            <many-to-one name="cause" column="DependencyCause" foreign-key=""/>
-            <many-to-one name="effect" column="DependencyEffect" foreign-key=""/>
-        </subclass>
-    </class>
-
-    <class name="OPMGraph" table="OPMGraph">
-        <id column="GraphKey" type="long">
-            <generator class="native"/>
-        </id>
-        <property column="GraphId" name="id" type="string"/>
-        <component class="Annotations" name="annotations">
-            <bag name="annotation">
-                <key column="GraphKey"/>
-                <one-to-many class="Annotation"/>
-            </bag>
-        </component>
-        <component class="Accounts" name="accounts">
-            <bag name="account">
-                <key column="GraphKey"/>
-                <one-to-many class="Account"/>
-            </bag>
-        </component>
-        <component class="Agents" name="agents">
-            <bag name="agent">
-                <key column="GraphKey"/>
-                <one-to-many class="Agent"/>
-            </bag>
-        </component>
-        <component class="Artifacts" name="artifacts">
-            <bag name="artifact">
-                <key column="GraphKey"/>
-                <one-to-many class="Artifact"/>
-            </bag>
-        </component>
-        <component class="Processes" name="processes">
-            <bag name="process">
-                <key column="GraphKey"/>
-                <one-to-many class="Process"/>
-            </bag>
-        </component>
-        <component class="CausalDependencies" name="causalDependencies">
-            <bag name="dependency">
-                <key column="GraphKey"/>
-                <one-to-many class="CausalDependency"/>
-            </bag>
-        </component>
-    </class>
+  <class name="OPMGraph" table="OPMGraph">
+    <id name="dbId" column="GraphKey" type="long">
+      <generator class="native"/>
+    </id>
+    <property column="GraphId" name="id" type="string"/>
+    <component class="Annotations" name="annotations">
+      <bag name="annotation">
+        <key column="GraphKey"/>
+        <one-to-many class="Annotation"/>
+      </bag>
+    </component>
+    <component class="Accounts" name="accounts">
+      <bag name="account">
+        <key column="GraphKey"/>
+        <one-to-many class="Account"/>
+      </bag>
+    </component>
+    <component class="Agents" name="agents">
+      <bag name="agent">
+        <key column="GraphKey"/>
+        <one-to-many class="Agent"/>
+      </bag>
+    </component>
+    <component class="Artifacts" name="artifacts">
+      <bag name="artifact">
+        <key column="GraphKey"/>
+        <one-to-many class="Artifact"/>
+      </bag>
+    </component>
+    <component class="Processes" name="processes">
+      <bag name="process">
+        <key column="GraphKey"/>
+        <one-to-many class="Process"/>
+      </bag>
+    </component>
+    <component class="CausalDependencies" name="causalDependencies">
+      <bag name="dependency">
+        <key column="GraphKey"/>
+        <one-to-many class="CausalDependency"/>
+      </bag>
+    </component>
+  </class>
 </hibernate-mapping>

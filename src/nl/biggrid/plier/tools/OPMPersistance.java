@@ -7,11 +7,7 @@ package nl.biggrid.plier.tools;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.Transaction;
-
+import java.util.List;
 import nl.biggrid.plier.opm.*;
 /**
  *
@@ -48,17 +44,6 @@ public class OPMPersistance {
                 accountList,
                 "cake");
 
-//        Agent agent1 = oFactory.newAgent("John", accountList);
-//        Agent agent2 = oFactory.newAgent("bakery", accountList);
-//
-//        nl.biggrid.plier.opm.Process process = oFactory.newProcess("baking cake with ingredients", accountList);
-//
-//        Artifact a1 = oFactory.newArtifact("butter", accountList);
-//        Artifact a2 = oFactory.newArtifact("eggs", accountList);
-//        Artifact a3 = oFactory.newArtifact("flour",accountList);
-//        Artifact a4 = oFactory.newArtifact("sugar",accountList);
-//        Artifact a5 = oFactory.newArtifact("cake", accountList);
-
         Used u1 = oFactory.newUsed("used1", process, "(butter)", a1, accountList);
         Used u2 = oFactory.newUsed("used2", process, "(egg)", a2, accountList);
         Used u3 = oFactory.newUsed("used3", process, "(flour)", a3, accountList);
@@ -83,86 +68,16 @@ public class OPMPersistance {
         return graph;
     }
 
-    static Agent createAgent() {
-        OPMFactory oFactory = new OPMFactory();
-        Account mainAccount = oFactory.newAccount("main");
-        Collection<Account> accountList = Collections.singleton(mainAccount);
-        return oFactory.newAgent("John", accountList, "John Doe");
-    }
-    static void persist(SessionFactory factory, OPMGraph graph) {
-        System.out.println("### MAIN::PERSIST ...");
-        Session session = factory.openSession();
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            session.save( graph );
-            tx.commit();
-            System.out.println("### GRAPH "+graph.getId()+" -> SAVED ...");
-        } catch (Exception e) {
-            if (tx != null) {
-                tx.rollback();
-            }
-        } finally {
-            session.close();
-        }
-    }
-
-    static void persist(SessionFactory factory, Agent agt) {
-        System.out.println("### MAIN::PERSIST ...");
-        Session session = factory.openSession();
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            session.save( agt );
-            tx.commit();
-            System.out.println("### AGENT "+agt.getId()+" -> SAVED ...");
-        } catch (Exception e) {
-            if (tx != null) {
-                tx.rollback();
-            }
-        } finally {
-            session.close();
-        }
-    }
-
-    static OPMGraph load(SessionFactory factory) {
-        OPMGraph graph = null;
-        Session session = factory.openSession();
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-//            final String QUERY = "from OPMGraph where id=?";
-//            Query hqlQuery = session.createQuery(QUERY);
-//            hqlQuery.setString(0, "Victoria Sponge Cake Provenance");
-//            //graph = (OPMGraph)hqlQuery.uniqueResult();
-//            List<OPMGraph> results = hqlQuery.list();
-//            graph = results.get(0);
-            //graph = (OPMGraph)session.get(OPMGraph.class, "Victoria Sponge Cake Provenance");
-            graph = (OPMGraph)session.get(OPMGraph.class, new Long(2));
-            System.out.println("### GRAPH "+graph.getId()+" -> EXTRACTED ...");
-            System.out.println("### ACCOUNTS -> "+graph.getAccounts().getAccount().size());
-            System.out.println("### OVERLAPS -> "+graph.getAccounts().getOverlaps().size());
-            System.out.println("### AGENTS -> "+graph.getAgents().getAgent().size());
-            System.out.println("### ARTIFACTS -> "+graph.getArtifacts().getArtifact().size());
-            System.out.println("### PROCESSES -> "+graph.getProcesses().getProcess().size());
-            System.out.println("### DEPENDENCIES -> "+graph.getCausalDependencies().getDependency().size());
-            System.out.println("### ANNOTATIONS -> "+graph.getAnnotation().size());
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) {
-                tx.rollback();
-            }
-        } finally {
-            session.close();
-        }
-        return graph;
-    }
-
     public static void main(String args[]) {
-        SessionFactory factory = new Configuration().configure() // configures settings from hibernate.cfg.xml
-                .buildSessionFactory();
-        persist(factory, createOPM());
-        //persist(factory, createAgent());
-        //load(factory);
+        PersistenceManager persistenceManager = PersistenceManager.instance();
+        persistenceManager.init("hibernate.cfg.xml");
+        persistenceManager.persist( createOPM() );
+        //OPMGraph graph = (OPMGraph) persistenceManager.get(OPMGraph.class, new Long(2));
+        //System.out.println("### Got graph '"+graph.getId()+"'");
+        //graph.setId("Updated Victoria Sponge Cake Provenance");
+        //persistenceManager.update(graph);
+        //persistenceManager.delete(graph);
+        //List<OPMGraph> allData = persistenceManager.getAll();
+        //System.out.println("### Got "+allData.size()+" graphs ...");
     }
 }

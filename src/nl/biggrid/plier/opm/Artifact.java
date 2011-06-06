@@ -58,6 +58,7 @@ public class Artifact implements HasAccounts, Annotable, Serializable {
     @XmlID
     protected String id;
 
+    protected long dbId;
     /**
      * Gets the value of the account property.
      * 

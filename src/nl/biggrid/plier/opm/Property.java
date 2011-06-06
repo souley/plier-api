@@ -47,6 +47,7 @@ public class Property implements Serializable {
     @XmlAttribute
     protected String uri;
 
+    protected long dbId;
     /**
      * Gets the value of the value property.
      * 

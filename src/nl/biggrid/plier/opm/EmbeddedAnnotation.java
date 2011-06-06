@@ -62,6 +62,7 @@ public class EmbeddedAnnotation implements HasAccounts, Annotable, Serializable 
     @XmlID
     protected String id;
 
+    protected long dbId;
     /**
      * Gets the value of the property property.
      * 
