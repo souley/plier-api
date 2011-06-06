@@ -15,7 +15,11 @@
     <property name="connection.username">admin</property>
     <property name="connection.password">bgadmin</property>
     <!-- JDBC connection pool (use the built-in) -->
-    <property name="connection.pool_size">1</property>
+    <property name="hibernate.c3p0.min_size">5</property>
+    <property name="hibernate.c3p0.max_size">20</property>
+    <property name="hibernate.c3p0.timeout">1800</property>
+    <property name="hibernate.c3p0.max_statements">50</property>
+    <!--<property name="connection.pool_size">1</property>-->
     <!-- SQL dialect -->
     <property name="dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
     <!-- Enable Hibernate's automatic session context management -->
@@ -24,7 +28,7 @@
     <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
     <property name="hibernate.cache.use_second_level_cache">false</property>
     <!-- Echo all executed SQL to stdout -->
-    <property name="show_sql">true</property>
+    <!--<property name="show_sql">true</property>-->
     <!-- Drop and re-create the database schema on startup -->
     <property name="hbm2ddl.auto">create-drop</property>
     <!--<property name="hbm2ddl.import_file">removefk.sql</property>-->
