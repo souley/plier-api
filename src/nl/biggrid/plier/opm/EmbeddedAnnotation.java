@@ -179,4 +179,23 @@ public class EmbeddedAnnotation implements HasAccounts, Annotable, Serializable 
         this.id = value;
     }
 
+    // utility functions
+    public void addProperty(String key, String value) {
+        if (propertyList == null) {
+            Property property = new Property();
+            property.setUri(key);
+            property.setValue(value);
+            propertyList.add(property);
+        }
+    }
+
+    public Property getProperty(String key) {
+        for (Property property : propertyList) {
+            if (key.equalsIgnoreCase(property.getUri())) {
+                return property;
+            }
+        }
+        return null;
+    }
+
 }

@@ -197,4 +197,14 @@ public class Process implements HasAccounts, Annotable, Serializable {
         this.endTime = value;
     }
 
+    // utility functions
+    public EmbeddedAnnotation getAnnotation(String annoId) {
+        for (EmbeddedAnnotation anno : annotation) {
+            if (annoId.equalsIgnoreCase(anno.getId())) {
+                return anno;
+            }
+        }
+        return null;
+    }
+
 }
