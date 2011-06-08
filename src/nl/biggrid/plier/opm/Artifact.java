@@ -59,6 +59,7 @@ public class Artifact implements HasAccounts, Annotable, Serializable {
     protected String id;
 
     protected long dbId;
+    protected String value;
     /**
      * Gets the value of the account property.
      * 
@@ -144,6 +145,30 @@ public class Artifact implements HasAccounts, Annotable, Serializable {
      */
     public void setId(String value) {
         this.id = value;
+    }
+
+    /**
+     * Gets the value of the value property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value of the value property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

@@ -70,6 +70,7 @@
       <generator class="native"/>
     </id>
     <property column="ArtifactId" name="id" type="string"/>
+    <property column="ArtifactValue" name="value" type="string"/>
     <bag name="account" table="ArtifactAccount">
       <key column="ArtifactKey"/>
       <many-to-many class="Account" column="AccountKey"/>
