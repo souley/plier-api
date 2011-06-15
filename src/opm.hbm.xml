@@ -22,11 +22,11 @@
     </id>
     <discriminator column="AnnotationType" type="string"/>
     <property column="AnnotationId" name="id" type="string"/>
-    <bag name="propertyList" table="AnnotationProperty">
+    <bag name="propertyList" table="AnnotationProperty" lazy="false">
       <key column="AnnotationKey"/>
       <many-to-many class="Property" column="PropertyId"/>
     </bag>
-    <bag name="account" table="AnnotationAccount">
+    <bag name="account" table="AnnotationAccount" lazy="false">
       <key column="AnnotationKey"/>
       <many-to-many class="Account" column="AccountKey"/>
     </bag>
@@ -44,7 +44,7 @@
       <generator class="native"/>
     </id>
     <property column="AccountId" name="id" type="string"/>
-    <bag name="annotation" table="AccountAnnotation">
+    <bag name="annotation" table="AccountAnnotation" lazy="false">
       <key column="AccountKey"/>
       <many-to-many class="Annotation" column="AnnotationKey" unique="true"/>
     </bag>
@@ -55,11 +55,11 @@
       <generator class="native"/>
     </id>
     <property column="AgentId" name="id" type="string"/>
-    <bag name="account" table="AgentAccount">
+    <bag name="account" table="AgentAccount" lazy="false">
       <key column="AgentKey"/>
       <many-to-many class="Account" column="AccountKey"/>
     </bag>
-    <bag name="annotation" table="AgentAnnotation">
+    <bag name="annotation" table="AgentAnnotation" lazy="false">
       <key column="AgentKey"/>
       <many-to-many class="EmbeddedAnnotation" column="AnnotationKey"/>
     </bag>
@@ -71,11 +71,11 @@
     </id>
     <property column="ArtifactId" name="id" type="string"/>
     <property column="ArtifactValue" name="value" type="string"/>
-    <bag name="account" table="ArtifactAccount">
+    <bag name="account" table="ArtifactAccount" lazy="false">
       <key column="ArtifactKey"/>
       <many-to-many class="Account" column="AccountKey"/>
     </bag>
-    <bag name="annotation" table="ArtifactAnnotation">
+    <bag name="annotation" table="ArtifactAnnotation" lazy="false">
       <key column="ArtifactKey"/>
       <many-to-many class="EmbeddedAnnotation" column="AnnotationKey"/>
     </bag>
@@ -88,11 +88,11 @@
     <property column="ProcessId" name="id" type="string"/>
     <property column="StartTime" name="startTime" type="timestamp"/>
     <property column="EndTime" name="endTime" type="timestamp"/>
-    <bag name="account" table="ProcessAccount">
+    <bag name="account" table="ProcessAccount" lazy="false">
       <key column="ProcessKey"/>
       <many-to-many class="Account" column="AccountKey"/>
     </bag>
-    <bag name="annotation" table="ProcessAnnotation">
+    <bag name="annotation" table="ProcessAnnotation" lazy="false">
       <key column="ProcessKey"/>
       <many-to-many class="EmbeddedAnnotation" column="AnnotationKey"/>
     </bag>
@@ -105,11 +105,11 @@
     <discriminator column="DependencyType" type="string"/>
     <property column="DependencyId" name="id" type="string"/>
     <property column="Time" name="time" type="timestamp"/>
-    <bag name="account" table="DependencyAccount">
+    <bag name="account" table="DependencyAccount" lazy="false">
       <key column="DependencyKey"/>
       <many-to-many class="Account" column="AccountKey"/>
     </bag>
-    <bag name="annotation" table="DependencyAnnotation">
+    <bag name="annotation" table="DependencyAnnotation" lazy="false">
       <key column="DependencyKey"/>
       <many-to-many class="Annotation" column="AnnotationKey"/>
     </bag>
@@ -144,37 +144,37 @@
     </id>
     <property column="GraphId" name="id" type="string"/>
     <component class="Annotations" name="annotations">
-      <bag name="annotation">
+      <bag name="annotation" lazy="false">
         <key column="GraphKey"/>
         <one-to-many class="Annotation"/>
       </bag>
     </component>
     <component class="Accounts" name="accounts">
-      <bag name="account">
+      <bag name="account" lazy="false">
         <key column="GraphKey"/>
         <one-to-many class="Account"/>
       </bag>
     </component>
     <component class="Agents" name="agents">
-      <bag name="agent">
+      <bag name="agent" lazy="false">
         <key column="GraphKey"/>
         <one-to-many class="Agent"/>
       </bag>
     </component>
     <component class="Artifacts" name="artifacts">
-      <bag name="artifact">
+      <bag name="artifact" lazy="false">
         <key column="GraphKey"/>
         <one-to-many class="Artifact"/>
       </bag>
     </component>
     <component class="Processes" name="processes">
-      <bag name="process">
+      <bag name="process" lazy="false">
         <key column="GraphKey"/>
         <one-to-many class="Process"/>
       </bag>
     </component>
     <component class="CausalDependencies" name="causalDependencies">
-      <bag name="dependency">
+      <bag name="dependency" lazy="false">
         <key column="GraphKey"/>
         <one-to-many class="CausalDependency"/>
       </bag>

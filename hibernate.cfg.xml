@@ -10,28 +10,26 @@
 <hibernate-configuration>
   <session-factory>
     <!-- Database connection settings -->
-    <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-    <property name="connection.url">jdbc:mysql://node231.das3.science.uva.nl:3306/OPM_AMC2</property>
-    <property name="connection.username">admin</property>
-    <property name="connection.password">bgadmin</property>
-    <!-- JDBC connection pool (use the built-in) -->
+    <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+    <property name="hibernate.connection.url">jdbc:mysql://node231.das3.science.uva.nl:3306/OPM_AMC2</property>
+    <property name="hibernate.connection.username">admin</property>
+    <property name="hibernate.connection.password">bgadmin</property>
+    <!-- JDBC connection pool (use C3P0) -->
     <property name="hibernate.c3p0.min_size">5</property>
     <property name="hibernate.c3p0.max_size">20</property>
     <property name="hibernate.c3p0.timeout">1800</property>
     <property name="hibernate.c3p0.max_statements">50</property>
-    <!--<property name="connection.pool_size">1</property>-->
     <!-- SQL dialect -->
-    <property name="dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+    <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
     <!-- Enable Hibernate's automatic session context management -->
-    <property name="current_session_context_class">thread</property>
+    <property name="hibernate.current_session_context_class">thread</property>
     <!-- Disable the second-level cache  -->
-    <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+    <property name="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
     <property name="hibernate.cache.use_second_level_cache">false</property>
     <!-- Echo all executed SQL to stdout -->
     <!--<property name="show_sql">true</property>-->
     <!-- Drop and re-create the database schema on startup -->
-    <property name="hbm2ddl.auto">create-drop</property>
-    <!--<property name="hbm2ddl.import_file">removefk.sql</property>-->
+    <!--<property name="hibernate.hbm2ddl.auto">create-drop</property>-->
     <mapping resource="opm.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

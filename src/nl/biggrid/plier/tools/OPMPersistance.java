@@ -68,12 +68,43 @@ public class OPMPersistance {
         return graph;
     }
 
+    static String toString(OPMGraph aGraph) {
+        String strGraph = "Graph: "+aGraph.getId();
+        strGraph += "\nAccounts: ";
+        for (Account acc : aGraph.getAccounts().getAccount()) {
+            strGraph += (acc.getId()+", ");
+        }
+        strGraph += ("\nAgents: "+aGraph.getAgents().getAgent().size());
+        for (Agent agt : aGraph.getAgents().getAgent()) {
+            strGraph += ("\n\t"+agt.getId()+":\n\t\taccounts: ");
+            for (Account acc : agt.getAccount()) {
+                strGraph += (acc.getId()+", ");
+            }
+        }
+        strGraph += ("\nArtifacts: "+aGraph.getArtifacts().getArtifact().size());
+        strGraph += ("\nProcesses: "+aGraph.getProcesses().getProcess().size());
+        for (nl.biggrid.plier.opm.Process proc : aGraph.getProcesses().getProcess()) {
+            strGraph += ("\n\t"+proc.getId()+":\n\t\tannotations: ");
+            for (EmbeddedAnnotation ann : proc.getAnnotation()) {
+                strGraph += (ann.getId()+", ");
+            }
+        }
+        strGraph += ("\nDependencies: "+aGraph.getCausalDependencies().getDependency().size());
+        strGraph += ("\nAnnotations: "+aGraph.getAnnotations().getAnnotation().size());
+        return strGraph;
+    }
+
     public static void main(String args[]) {
         PersistenceManager persistenceManager = PersistenceManager.instance();
         persistenceManager.init("hibernate.cfg.xml");
-        persistenceManager.persist( createOPM() );
-        //OPMGraph graph = (OPMGraph) persistenceManager.get(OPMGraph.class, new Long(2));
-        //System.out.println("### Got graph '"+graph.getId()+"'");
+        //persistenceManager.persist( createOPM() );
+        OPMGraph graph = (OPMGraph) persistenceManager.get(OPMGraph.class, new Long(2));
+        System.out.println("### Got graph '"+graph.getId()+"'");
+        String xmlGraph = PersistenceManager.toXML(graph);
+        //System.out.println("### CONVERTING TO XML:\n"+xmlGraph);
+        OPMGraph graph2 = PersistenceManager.fromXML(xmlGraph);
+        System.out.println("\n### BACK TO OBJECT:\n"+toString(graph2));
+        //System.out.println("\n### BACK TO OBJECT:\n"+graph2.getId());
         //graph.setId("Updated Victoria Sponge Cake Provenance");
         //persistenceManager.update(graph);
         //persistenceManager.delete(graph);

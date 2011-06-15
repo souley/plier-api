@@ -47,7 +47,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @XmlType(name = "Account", propOrder = {
     "annotation"
 })
-public class Account implements Serializable {
+public class Account implements Annotable, Serializable {
 
     @XmlElementRef(name = "annotation", namespace = "http://openprovenance.org/model/v1.1.a", type = JAXBElement.class)
     protected List<EmbeddedAnnotation> annotation;
