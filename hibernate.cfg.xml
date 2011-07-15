@@ -11,7 +11,7 @@
   <session-factory>
     <!-- Database connection settings -->
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-    <property name="hibernate.connection.url">jdbc:mysql://node231.das3.science.uva.nl:3306/OPM_AMC2</property>
+    <property name="hibernate.connection.url">jdbc:mysql://node231.das3.science.uva.nl:3306/OPM_DB1_1</property>
     <property name="hibernate.connection.username">admin</property>
     <property name="hibernate.connection.password">bgadmin</property>
     <!-- JDBC connection pool (use C3P0) -->

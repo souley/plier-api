@@ -235,7 +235,7 @@ public class PersistenceManager {
         return textify(new Document(root));
     }
 
-    static public void addAccount(final Element parent, final Account account) {
+    static protected void addAccount(final Element parent, final Account account) {
         Element accElt = (Element) new Element("opm:Account", OPM_NS);
         accElt.addAttribute(new Attribute("id", account.getId()));
         for (EmbeddedAnnotation ann : account.getAnnotation()) {
@@ -244,79 +244,86 @@ public class PersistenceManager {
         parent.appendChild(accElt);
     }
 
-    static public void addAccountElement(final Element parent, final Account account) {
+    static protected void addAccountElement(final Element parent, final Account account) {
         Element accElt = (Element) new Element("account");
         accElt.appendChild(account.getId());
         parent.appendChild(accElt);
     }
 
-    static public void addAgent(final Element parent, final Agent agent) {
+    static protected void addAgent(final Element parent, final Agent agent) {
         Element agtElt = (Element) new Element("opm:Agent", OPM_NS);
         agtElt.addAttribute(new Attribute("id", agent.getId()));
         for (Account acc : agent.getAccount()) {
             addAccountElement(agtElt, acc);
         }
         for (EmbeddedAnnotation ann : agent.getAnnotation()) {
-            addAnnotation(agtElt, (Annotation)ann);
+            addAnnotation(agtElt, ann);
         }
         parent.appendChild(agtElt);
     }
 
-    static public void addProperty(final Element parent, final Property prop) {
+    static protected void addProperty(final Element parent, final Property prop) {
         Element propElt = (Element) new Element("property");
         propElt.addAttribute(new Attribute("key", prop.getUri()));
         propElt.addAttribute(new Attribute("value", prop.getValue()));
         parent.appendChild(propElt);
     }
 
-    static public void addAnnotation(final Element parent, final Annotation anno) {
-        Element annElt = (Element) new Element("opm:Annotation", OPM_NS);
-        annElt.addAttribute(new Attribute("id", anno.getId()));
-        Element esElt = (Element) new Element("externalSubject");
-        esElt.appendChild(anno.getExternalSubject());
-        annElt.appendChild(esElt);
-        Element lsElt = (Element) new Element("localSubject");
-        lsElt.appendChild(anno.getLocalSubject());
-        annElt.appendChild(lsElt);
-        for (Property prop : anno.getPropertyList()) {
-            addProperty(annElt, prop);
-        }
-        //Element accounts = (Element) new Element("opm:Accounts");
-        //annElt.appendChild(accounts);
-        for (Account acc : anno.getAccount()) {
-            addAccountElement(annElt, acc);
+    static protected void addAnnotation(final Element parent, final EmbeddedAnnotation ann) {
+        Element annElt = null;
+        if (ann instanceof Annotation) {
+            Annotation anno = (Annotation) ann;
+            annElt = (Element) new Element("opm:Annotation", OPM_NS);
+            annElt.addAttribute(new Attribute("id", anno.getId()));
+            Element esElt = (Element) new Element("externalSubject");
+            esElt.appendChild(anno.getExternalSubject());
+            annElt.appendChild(esElt);
+            Element lsElt = (Element) new Element("localSubject");
+            lsElt.appendChild(anno.getLocalSubject());
+            annElt.appendChild(lsElt);
+            for (Property prop : anno.getPropertyList()) {
+                addProperty(annElt, prop);
+            }
+            for (Account acc : anno.getAccount()) {
+                addAccountElement(annElt, acc);
+            }
+        } else if (ann instanceof Label) {
+            Label label = (Label)ann;
+            annElt = (Element) new Element("label");
+            annElt.addAttribute(new Attribute("value", label.getValue()));
         }
         parent.appendChild(annElt);
     }
 
-    static public void addArtifact(final Element parent, final Artifact artifact) {
+    static protected void addArtifact(final Element parent, final Artifact artifact) {
         Element artElt = (Element) new Element("opm:Artifact", OPM_NS);
         artElt.addAttribute(new Attribute("id", artifact.getId()));
-        Element valElt = (Element) new Element("opm:label", OPM_NS);
-        valElt.addAttribute(new Attribute("value", artifact.getValue()));
-        artElt.appendChild(valElt);
+        artElt.addAttribute(new Attribute("value", artifact.getValue()));
+        //Element valElt = (Element) new Element("label", OPM_NS);
+        //valElt.addAttribute(new Attribute("value", artifact.getValue()));
+        //artElt.appendChild(valElt);
         for (Account acc : artifact.getAccount()) {
             addAccountElement(artElt, acc);
         }
         for (EmbeddedAnnotation ann : artifact.getAnnotation()) {
-            addAnnotation(artElt, (Annotation)ann);
+            addAnnotation(artElt, ann);
         }
         parent.appendChild(artElt);
     }
 
-    static public void addProcess(final Element parent, final nl.biggrid.plier.opm.Process process) {
+    static protected void addProcess(final Element parent, final nl.biggrid.plier.opm.Process process) {
         Element proElt = (Element) new Element("opm:Process", OPM_NS);
         proElt.addAttribute(new Attribute("id", process.getId()));
         for (Account acc : process.getAccount()) {
             addAccountElement(proElt, acc);
         }
         for (EmbeddedAnnotation ann : process.getAnnotation()) {
-            addAnnotation(proElt, (Annotation)ann);
+            addAnnotation(proElt, ann);
         }
         parent.appendChild(proElt);
     }
 
-    static public void addDependency(final Element parent, final CausalDependency dep) {
+    static protected void addDependency(final Element parent, final CausalDependency dep) {
         if (dep instanceof Used) {
             addUsed(parent, (Used) dep);
         } else if (dep instanceof WasControlledBy) {
@@ -330,7 +337,7 @@ public class PersistenceManager {
         }
     }
 
-    static public void addUsed(final Element parent, final Used used) {
+    static protected void addUsed(final Element parent, final Used used) {
         Element uElt = (Element) new Element("opm:Used", OPM_NS);
         Element effElt = (Element) new Element("opm:effect", OPM_NS);
         effElt.addAttribute(new Attribute("ref", used.getEffect().getId()));
@@ -347,7 +354,7 @@ public class PersistenceManager {
         parent.appendChild(uElt);
     }
 
-    static public void addWasControlledBy(final Element parent, final WasControlledBy wcb) {
+    static protected void addWasControlledBy(final Element parent, final WasControlledBy wcb) {
         Element wcbElt = (Element) new Element("opm:WasControlledBy", OPM_NS);
         Element effElt = (Element) new Element("opm:effect", OPM_NS);
         effElt.addAttribute(new Attribute("ref", wcb.getEffect().getId()));
@@ -364,7 +371,7 @@ public class PersistenceManager {
         parent.appendChild(wcbElt);
     }
 
-    static public void addWasGeneratedBy(final Element parent, final WasGeneratedBy wgb) {
+    static protected void addWasGeneratedBy(final Element parent, final WasGeneratedBy wgb) {
         Element wgbElt = (Element) new Element("opm:WasGeneratedBy", OPM_NS);
         Element effElt = (Element) new Element("opm:effect", OPM_NS);
         effElt.addAttribute(new Attribute("ref", wgb.getEffect().getId()));
@@ -381,7 +388,7 @@ public class PersistenceManager {
         parent.appendChild(wgbElt);
     }
 
-    static public void addWasDerivedFrom(final Element parent, final WasDerivedFrom wdf) {
+    static protected void addWasDerivedFrom(final Element parent, final WasDerivedFrom wdf) {
         Element wdfElt = (Element) new Element("opm:WasDerivedFrom", OPM_NS);
         Element effElt = (Element) new Element("opm:effect", OPM_NS);
         effElt.addAttribute(new Attribute("ref", wdf.getEffect().getId()));
@@ -395,7 +402,7 @@ public class PersistenceManager {
         parent.appendChild(wdfElt);
     }
 
-    static public void addWasTriggeredBy(final Element parent, final WasTriggeredBy wtb) {
+    static protected void addWasTriggeredBy(final Element parent, final WasTriggeredBy wtb) {
         Element wtbElt = (Element) new Element("opm:WasTriggeredBy", OPM_NS);
         Element effElt = (Element) new Element("opm:effect", OPM_NS);
         effElt.addAttribute(new Attribute("ref", wtb.getEffect().getId()));
@@ -409,7 +416,7 @@ public class PersistenceManager {
         parent.appendChild(wtbElt);
     }
 
-    static public String textify(final Document doc) {
+    static protected String textify(final Document doc) {
         String xml = "";
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
@@ -425,7 +432,7 @@ public class PersistenceManager {
         return xml;
     }
 
-    static public OPMGraph fromXML(final String xmlGraph) {
+    static protected OPMGraph fromXML(final String xmlGraph) {
         OPMGraph opmGraph = new OPMGraph();
         Builder builder = new Builder();
         try {
@@ -477,7 +484,7 @@ public class PersistenceManager {
         graph.setAccounts(accounts);
     }
 
-    static Account getAccountById(String aid, OPMGraph graph) {
+    static protected Account getAccountById(String aid, OPMGraph graph) {
         for (Account acc : graph.getAccounts().getAccount()) {
             if (aid.equalsIgnoreCase(acc.getId())) {
                 return acc;
@@ -557,6 +564,7 @@ public class PersistenceManager {
             if ("opm:Artifact".equalsIgnoreCase(eltName)) {
                 Artifact artifact = new Artifact();
                 artifact.setId(children.get(i).getAttributeValue("id"));
+                artifact.setValue(children.get(i).getAttributeValue("value"));
                 artifacts.getArtifact().add(artifact);
                 setNodeEdgeAccounts(child, artifact, graph);
                 setNodeEdgeAnnotations(child, artifact);
@@ -582,7 +590,7 @@ public class PersistenceManager {
         graph.setProcesses(processes);
     }
 
-    static nl.biggrid.plier.opm.Process getGraphProcessById(OPMGraph graph, String pid) {
+    static protected nl.biggrid.plier.opm.Process getGraphProcessById(OPMGraph graph, String pid) {
         for (nl.biggrid.plier.opm.Process process : graph.getProcesses().getProcess()) {
             if (pid.equalsIgnoreCase(process.getId())) {
                 return process;
@@ -591,7 +599,7 @@ public class PersistenceManager {
         return null;
     }
 
-    static Artifact getGraphArtifactById(OPMGraph graph, String aid) {
+    static protected Artifact getGraphArtifactById(OPMGraph graph, String aid) {
         for (Artifact artifact : graph.getArtifacts().getArtifact()) {
             if (aid.equalsIgnoreCase(artifact.getId())) {
                 return artifact;
@@ -600,7 +608,7 @@ public class PersistenceManager {
         return null;
     }
 
-    static Agent getGraphAgentById(OPMGraph graph, String aid) {
+    static protected Agent getGraphAgentById(OPMGraph graph, String aid) {
         for (Agent agent : graph.getAgents().getAgent()) {
             if (aid.equalsIgnoreCase(agent.getId())) {
                 return agent;
@@ -609,7 +617,7 @@ public class PersistenceManager {
         return null;
     }
 
-    static String getCDEffect(Element cd) {
+    static protected String getCDEffect(Element cd) {
         Elements children = cd.getChildElements();
         for (int i = 0; i < children.size(); i++) {
             if ("opm:effect".equalsIgnoreCase(children.get(i).getQualifiedName())) {
@@ -619,7 +627,7 @@ public class PersistenceManager {
         return null;
     }
 
-    static String getCDCause(Element cd) {
+    static protected String getCDCause(Element cd) {
         Elements children = cd.getChildElements();
         for (int i = 0; i < children.size(); i++) {
             if ("opm:cause".equalsIgnoreCase(children.get(i).getQualifiedName())) {
@@ -629,7 +637,7 @@ public class PersistenceManager {
         return null;
     }
 
-    static String getCDRole(Element cd) {
+    static protected String getCDRole(Element cd) {
         Elements children = cd.getChildElements();
         for (int i = 0; i < children.size(); i++) {
             if ("opm:role".equalsIgnoreCase(children.get(i).getQualifiedName())) {

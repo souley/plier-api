@@ -7,7 +7,6 @@ package nl.biggrid.plier.tools;
 import java.util.Collection;
 import java.util.Collections;
 
-import java.util.List;
 import nl.biggrid.plier.opm.*;
 /**
  *
@@ -98,12 +97,12 @@ public class OPMPersistance {
         PersistenceManager persistenceManager = PersistenceManager.instance();
         persistenceManager.init("hibernate.cfg.xml");
         //persistenceManager.persist( createOPM() );
-        OPMGraph graph = (OPMGraph) persistenceManager.get(OPMGraph.class, new Long(2));
+        OPMGraph graph = (OPMGraph) persistenceManager.get(OPMGraph.class, new Long(63));
         System.out.println("### Got graph '"+graph.getId()+"'");
         String xmlGraph = PersistenceManager.toXML(graph);
-        //System.out.println("### CONVERTING TO XML:\n"+xmlGraph);
-        OPMGraph graph2 = PersistenceManager.fromXML(xmlGraph);
-        System.out.println("\n### BACK TO OBJECT:\n"+toString(graph2));
+        System.out.println("### CONVERTING TO XML:\n"+xmlGraph);
+        //OPMGraph graph2 = PersistenceManager.fromXML(xmlGraph);
+        //System.out.println("\n### BACK TO OBJECT:\n"+toString(graph2));
         //System.out.println("\n### BACK TO OBJECT:\n"+graph2.getId());
         //graph.setId("Updated Victoria Sponge Cake Provenance");
         //persistenceManager.update(graph);
